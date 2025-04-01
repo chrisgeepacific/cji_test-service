@@ -19,7 +19,8 @@ def get_messages():
 def get_message(message_id: int):
     """Get a specific message by ID"""
     if message_id not in messages:
-        return {"error": "Message not found"}, 404
+        from flask import abort
+        abort(404, description="Message not found")
     return messages[message_id]
 
 
@@ -42,7 +43,8 @@ def create_message(message: Message):
 def delete_message(message_id: int):
     """Delete a message"""
     if message_id not in messages:
-        return {"error": "Message not found"}, 404
+        from flask import abort
+        abort(404, description="Message not found")
     
     del messages[message_id]
     return None
