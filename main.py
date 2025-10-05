@@ -8,15 +8,15 @@ app = Flask(__name__)
 router = FlaskRouter(
     app=app,
     title="Flask OpenAPI",
-    description="API for Flask application deployed on Railway",
+    description="API for Flask application test deployed",
     version="1.0.0",
-    docs_url="/api/docs",
+    docs_url="/v3/api-docs/test",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json"
 )
 
 # Include API routes with a prefix
-router.include_router(api_router, prefix="/api")
+router.include_router(api_router, prefix="/api/v1/test")
 
 @app.route('/')
 def index():
