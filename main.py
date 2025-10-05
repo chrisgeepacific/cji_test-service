@@ -22,6 +22,11 @@ router.include_router(api_router, prefix="/api/v1/test")
 def index():
     return render_template('index.html')
 
+
+@router.get("/healthz", tags=["system"])
+def healthz():
+    return {"status": "ok"}
+
 if __name__ == '__main__':
     import os
     port = int(os.environ.get("PORT", 8080))
