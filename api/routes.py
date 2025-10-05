@@ -8,6 +8,11 @@ router = FlaskRouter()
 messages = {}
 message_counter = 0
 
+class ServerTimeResponse(BaseModel):
+    epoch_ms: int
+    iso_utc: str
+    iso_server_tz: str
+    server_tz: str
 
 @router.get("/messages", tags=["messages"], response_model=list[MessageResponse])
 def get_messages():
@@ -48,3 +53,16 @@ def delete_message(message_id: int):
     
     del messages[message_id]
     return None
+
+@router.get("/public/check-time", tags=["system"], response_model=ServerTimeResponse)
+def public_check_time():
+    """Return server time (UTC, server TZ, and Vietnam time)."""
+    now_utc = datetime.now(timezone.utc)
+    now_server = datetime.now().astimezone()               # timezone của máy chủ
+
+    return {
+        "epoch_ms": int(now_utc.timestamp() * 1000),
+        "iso_utc": now_utc.isoformat(),
+        "iso_server_tz": now_server.isoformat(),
+        "server_tz": str(now_server.tzinfo)
+    }
