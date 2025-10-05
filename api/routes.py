@@ -1,4 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo                 # Python 3.9+
+from pydantic import BaseModel                # cho response model
 from fastopenapi.routers import FlaskRouter
 from .models import Message, MessageResponse
 
