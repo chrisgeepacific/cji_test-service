@@ -10,9 +10,9 @@ router = FlaskRouter(
     title="Flask OpenAPI",
     description="API for Flask application test deployed",
     version="1.0.0",
-    docs_url="/v3/api-docs/test",
+    docs_url="/api/docs",
     redoc_url="/api/redoc",
-    openapi_url="/api/openapi.json"
+    openapi_url="/v3/api-docs/test"
 )
 
 # Include API routes with a prefix
