@@ -1,1 +1,1 @@
-web: gunicorn main:app --bind [::]:$PORT --workers 2 --threads 8 --timeout 60 --log-level info
+web: gunicorn --workers=2 --threads=8 --bind 0.0.0.0:$PORT --bind [::]:$PORT app:app
