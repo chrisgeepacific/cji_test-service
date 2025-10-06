@@ -8,14 +8,20 @@ from fastapi.templating import Jinja2Templates
 # (nếu đang là Flask blueprint, xem ghi chú phía dưới để đổi sang APIRouter)
 from api import api_router
 
-app = FastAPI(
-    title="FastAPI OpenAPI",
-    description="API for application test deployed",
-    version="1.0.0",
-    docs_url="/api/docs",
-    redoc_url="/api/redoc",
-    openapi_url="/v3/api-docs/test",
-)
+server_urls = os.getenv("SERVER_URL", "http://localhost:8000").split(",")
+
+# Tạo danh sách servers cho FastAPI
+servers = [
+    {"url": url.strip(), "description": f"Server {i+1} ({url.strip()})"}
+    for i, url in enumerate(server_urls)
+    if url.strip()  # Bỏ qua URL rỗng
+]
+
+docs_url = os.getenv("DOCS_URL", "/v3/docs")
+redoc_url = os.getenv("REDOC_URL", "/v3/redoc")
+openapi_url = os.getenv("OPENAPI_URL", "/v3/api-docs")
+
+app = FastAPI(docs_url=docs_url, redoc_url=redoc_url, openapi_url=openapi_url, servers=servers)
 
 # Mount static & templates (nếu bạn có thư mục này)
 app.mount("/static", StaticFiles(directory="static"), name="static")
