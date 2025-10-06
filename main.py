@@ -28,16 +28,3 @@ app = FastAPI(docs_url=docs_url, redoc_url=redoc_url, openapi_url=openapi_url, s
 # Mount static & templates (nếu bạn có thư mục này)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
-
-# Trang chủ render template (giống Flask)
-@app.get("/", response_class=HTMLResponse)
-async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
-
-# Health
-@app.get("/healthz", tags=["system"])
-async def healthz():
-    return {"status": "ok"}
-
-# Giữ prefix như cũ
-app.include_router(api_router, prefix="/api/v1/test")
