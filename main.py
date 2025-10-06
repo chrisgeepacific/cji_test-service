@@ -28,3 +28,6 @@ app = FastAPI(docs_url=docs_url, redoc_url=redoc_url, openapi_url=openapi_url, s
 # Mount static & templates (nếu bạn có thư mục này)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+
+# Giữ prefix như cũ
+app.include_router(api_router, prefix="")
