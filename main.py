@@ -5,6 +5,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.openapi.utils import get_openapi
 
 # Giữ lại router cũ nếu nó đã là FastAPI APIRouter
 # (nếu đang là Flask blueprint, xem ghi chú phía dưới để đổi sang APIRouter)
@@ -14,7 +15,7 @@ server_urls = os.getenv("SERVER_URL", "http://localhost:8000").split(",")
 
 # Tạo danh sách servers cho FastAPI
 servers = [
-    {"url": url.strip(), "description": f"Server {i+1} ({url.strip()})"}
+    {"url": url.strip(), "description": f"Server {i + 1} ({url.strip()})"}
     for i, url in enumerate(server_urls)
     if url.strip()  # Bỏ qua URL rỗng
 ]
@@ -31,3 +32,33 @@ templates = Jinja2Templates(directory="templates")
 
 # Giữ prefix như cũ
 app.include_router(api_router, prefix="")
+
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+
+    schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        routes=app.routes,
+        description=app.description,
+    )
+
+    # ========== SecurityScheme: bearerAuth (HTTP Bearer JWT) ==========
+    schema.setdefault("components", {}).setdefault("securitySchemes", {})["bearerAuth"] = {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT auth description",
+    }
+
+    # ========== Global Security Requirement (như @SecurityRequirement) ==========
+    # Cho Swagger hiển thị nút Authorize và tự gửi Authorization header cho mọi endpoint
+    schema["security"] = [{"bearerAuth": []}]
+
+    app.openapi_schema = schema
+    return app.openapi_schema
+
+
+app.openapi = custom_openapi
