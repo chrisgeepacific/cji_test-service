@@ -19,11 +19,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 
-ENV PYTHONPATH=/app/src
+ENV PYTHONPATH=/app
 
 # Mở cổng mà ứng dụng sẽ lắng nghe
 EXPOSE 8080
 
 # Khởi chạy ứng dụng
 # CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
-CMD ["gunicorn", "src.main:app", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "[::]:8080"]
+CMD ["gunicorn", "main:app", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "[::]:8080"]
