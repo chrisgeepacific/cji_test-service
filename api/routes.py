@@ -1,14 +1,18 @@
+# routes.py (hoặc api.py)
 from datetime import datetime, timezone
-from zoneinfo import ZoneInfo                 # Python 3.9+
-from pydantic import BaseModel                # cho response model
-from fastopenapi.routers import FlaskRouter
+from typing import List
+
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+
 from .models import Message, MessageResponse
 
-router = FlaskRouter()
+router = APIRouter()
 
 # Simple in-memory database
-messages = {}
-message_counter = 0
+messages: dict[int, dict] = {}
+message_counter: int = 0
+
 
 class ServerTimeResponse(BaseModel):
     epoch_ms: int
@@ -16,7 +20,8 @@ class ServerTimeResponse(BaseModel):
     iso_server_tz: str
     server_tz: str
 
-@router.get("/messages", tags=["messages"], response_model=list[MessageResponse])
+
+@router.get("/messages", tags=["messages"], response_model=List[MessageResponse])
 def get_messages():
     """Get all messages"""
     return list(messages.values())
@@ -26,8 +31,7 @@ def get_messages():
 def get_message(message_id: int):
     """Get a specific message by ID"""
     if message_id not in messages:
-        from flask import abort
-        abort(404, description="Message not found")
+        raise HTTPException(status_code=404, detail="Message not found")
     return messages[message_id]
 
 
@@ -36,7 +40,7 @@ def create_message(message: Message):
     """Create a new message"""
     global message_counter
     message_counter += 1
-    
+
     new_message = {
         "id": message_counter,
         "content": message.content,
@@ -50,21 +54,21 @@ def create_message(message: Message):
 def delete_message(message_id: int):
     """Delete a message"""
     if message_id not in messages:
-        from flask import abort
-        abort(404, description="Message not found")
-    
+        raise HTTPException(status_code=404, detail="Message not found")
+
     del messages[message_id]
     return None
 
+
 @router.get("/public/check-time", tags=["system"], response_model=ServerTimeResponse)
 def public_check_time():
-    """Return server time (UTC, server TZ, and Vietnam time)."""
+    """Return server time (UTC and server TZ)."""
     now_utc = datetime.now(timezone.utc)
-    now_server = datetime.now().astimezone()               # timezone của máy chủ
+    now_server = datetime.now().astimezone()  # timezone của máy chủ
 
     return {
         "epoch_ms": int(now_utc.timestamp() * 1000),
         "iso_utc": now_utc.isoformat(),
         "iso_server_tz": now_server.isoformat(),
-        "server_tz": str(now_server.tzinfo)
+        "server_tz": str(now_server.tzinfo),
     }
