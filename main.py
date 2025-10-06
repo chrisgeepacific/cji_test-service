@@ -47,11 +47,7 @@ def custom_openapi():
 
     # ✅ BẢO TOÀN DANH SÁCH SERVERS
     # Lấy từ app.servers (được set khi khởi tạo FastAPI(..., servers=servers))
-    schema["servers"] = [
-        {"url": s.url, "description": s.description or ""}
-        for s in (app.servers or [])
-    ]
-
+    schema["servers"] = servers
 
     # ========== SecurityScheme: bearerAuth (HTTP Bearer JWT) ==========
     schema.setdefault("components", {}).setdefault("securitySchemes", {})["bearerAuth"] = {
