@@ -33,7 +33,7 @@ templates = Jinja2Templates(directory="templates")
 # Giữ prefix như cũ
 app.include_router(api_router, prefix="")
 
-
+# Add define openapi function to customize OpenAPI schema
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
@@ -44,6 +44,14 @@ def custom_openapi():
         routes=app.routes,
         description=app.description,
     )
+
+    # ✅ BẢO TOÀN DANH SÁCH SERVERS
+    # Lấy từ app.servers (được set khi khởi tạo FastAPI(..., servers=servers))
+    schema["servers"] = [
+        {"url": s.url, "description": s.description or ""}
+        for s in (app.servers or [])
+    ]
+
 
     # ========== SecurityScheme: bearerAuth (HTTP Bearer JWT) ==========
     schema.setdefault("components", {}).setdefault("securitySchemes", {})["bearerAuth"] = {
@@ -59,6 +67,5 @@ def custom_openapi():
 
     app.openapi_schema = schema
     return app.openapi_schema
-
 
 app.openapi = custom_openapi
