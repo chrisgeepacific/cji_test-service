@@ -27,9 +27,10 @@ COPY . .
 # 'app:create_app()' là ví dụ. Thay thế bằng cách gọi ứng dụng Flask của bạn.
 # -b 0.0.0.0:$PORT: Gunicorn lắng nghe trên tất cả các interface mạng (0.0.0.0) và cổng 8080.
 # -w 4: Chạy với 4 worker processes (thường là 2 * số lõi CPU + 1).
-
-CMD ["gunicorn", "--bind", "0.0.0.0:${PORT}", "--workers", "4", "app:app"]
-# Thay thế 'app:app' bằng tên module và tên instance Flask của bạn (Ví dụ: main:app hoặc wsgi:app)
-
 # 7. Khai báo cổng (Chỉ mang tính chất tài liệu, Railway không thực sự dùng)
+# Thay thế 'app:app' bằng tên module và tên instance Flask của bạn (Ví dụ: main:app hoặc wsgi:app)
 EXPOSE 8080
+
+CMD ["gunicorn", "src.main:app", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "[::]:8080"]
+
+
