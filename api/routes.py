@@ -72,3 +72,13 @@ def public_check_time():
         "iso_server_tz": now_server.isoformat(),
         "server_tz": str(now_server.tzinfo),
     }
+
+@router.get("/headers", tags=["system"])
+def get_request_headers(request: Request):
+    """
+    Return all request headers.
+    (Trả về toàn bộ header của request)
+    """
+    # Thuộc tính .headers của đối tượng Request là một dictionary-like object
+    # FastAPI sẽ tự động serialize nó thành JSON
+    return request.headers
